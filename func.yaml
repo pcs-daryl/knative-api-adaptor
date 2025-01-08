@@ -1,0 +1,5 @@
+specVersion: 0.36.0
+name: knative-api-adaptor
+runtime: python
+created: 2025-01-08T16:12:25.564355102+08:00
+invoke: cloudevent
