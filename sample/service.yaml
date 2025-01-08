@@ -1,0 +1,12 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: knative-api-adaptor
+spec:
+  template:
+    spec:
+      containers:
+        - image: index.docker.io/darylang96/knative-api-adaptor:latest
+          env:
+          - name: API_URL
+            value: "https://api.data.gov.sg/v1/transport/traffic-images"

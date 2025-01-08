@@ -19,9 +19,11 @@ def main(context: Context):
     if not url:
         raise ValueError(f"The environment variable 'API_URL' is not set or empty.")
 
+    verify_tls = os.getenv("VERIFY_TLS") if os.getenv("VERIFY_TLS") else False
+
     try:
         # Perform the HTTP GET request
-        response = requests.get(url)
+        response = requests.get(url, verify=verify_tls)
         response.raise_for_status()  # Raise an exception for HTTP errors
         
         # Try to parse the response as JSON

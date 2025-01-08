@@ -1,5 +1,12 @@
 specVersion: 0.36.0
 name: knative-api-adaptor
 runtime: python
+registry: docker.io/darylang96
+namespace: default
 created: 2025-01-08T16:12:25.564355102+08:00
 invoke: cloudevent
+build:
+  builder: pack
+deploy:
+  namespace: default
+  image: index.docker.io/darylang96/knative-api-adaptor@sha256:cc73f6a23bfe601512233b2b337ddba8402ae3c63e53d5d5ea606557508d1502
