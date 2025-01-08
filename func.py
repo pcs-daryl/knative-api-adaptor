@@ -1,5 +1,6 @@
 from parliament import Context, event
-
+import os
+import requests
 
 @event
 def main(context: Context):
@@ -13,4 +14,21 @@ def main(context: Context):
 
     # The return value here will be applied as the data attribute
     # of a CloudEvent returned to the function invoker
-    return context.cloud_event.data
+
+    url = os.getenv("API_URL")
+    if not url:
+        raise ValueError(f"The environment variable 'API_URL' is not set or empty.")
+
+    try:
+        # Perform the HTTP GET request
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        
+        # Try to parse the response as JSON
+        try:
+            return response.json()
+        except ValueError:
+            # If response isn't JSON, return as text
+            return response.text
+    except requests.RequestException as e:
+        raise RuntimeError(f"Failed to fetch data from '{url}': {e}")
