@@ -1,6 +1,15 @@
 from parliament import Context, event
 import os
 import requests
+import logging
+import sys
+
+logger = logging.getLogger()
+handler = logging.StreamHandler(sys.stdout)  # Write to stdout
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 @event
 def main(context: Context):
@@ -15,15 +24,15 @@ def main(context: Context):
     # The return value here will be applied as the data attribute
     # of a CloudEvent returned to the function invoker
 
-    url = os.getenv("API_URL")
-    if not url:
-        raise ValueError(f"The environment variable 'API_URL' is not set or empty.")
+    data = context.cloud_event.data
+    keys_to_check = ['API_URL']
+    if not all(key in data for key in keys_to_check):
+        return {"error" : "data keys invalid"}
 
-    verify_tls = os.getenv("VERIFY_TLS") if os.getenv("VERIFY_TLS") else False
-
+    logger.info("Polling " + data["API_URL"]) 
     try:
         # Perform the HTTP GET request
-        response = requests.get(url, verify=verify_tls)
+        response = requests.get(data['API_URL'])
         response.raise_for_status()  # Raise an exception for HTTP errors
         
         # Try to parse the response as JSON
@@ -33,4 +42,4 @@ def main(context: Context):
             # If response isn't JSON, return as text
             return response.text
     except requests.RequestException as e:
-        raise RuntimeError(f"Failed to fetch data from '{url}': {e}")
+        raise RuntimeError(f"Failed to fetch data from '{data['API_URL']}': {e}")
